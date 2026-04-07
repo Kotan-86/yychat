@@ -9,11 +9,18 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    private let speechController = SpeechSynthesizerController()
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        try? AudioSessionConfigurator.configureAudioSession()
     }
 
-
+    @IBAction func speakButtonTapped(_ sender: UIButton) {
+        do {
+            try speechController.speak(text: "Hello World")
+        } catch {
+            print("読み上げを開始できませんでした: \(error)")
+        }
+    }
 }
-
