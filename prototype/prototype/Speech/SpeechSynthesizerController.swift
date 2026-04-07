@@ -20,8 +20,6 @@ final class SpeechSynthesizerController {
         try AudioSessionConfigurator.configureAudioSession()
         try AudioSessionConfigurator.activateSession()
 
-        synthesizer.stopSpeaking(at: .immediate)
-
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: "ja-JP")
         synthesizer.speak(utterance)
