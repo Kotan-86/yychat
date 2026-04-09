@@ -6,6 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F44A4DCF2F878C87003438A3 /* delete_down.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F44A4DCB2F878C87003438A3 /* delete_down.mp3 */; };
+		F44A4DD02F878C87003438A3 /* Down.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F44A4DCC2F878C87003438A3 /* Down.mp3 */; };
+		F44A4DD12F878C87003438A3 /* input_hit.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F44A4DCD2F878C87003438A3 /* input_hit.mp3 */; };
+		F44A4DD22F878C87003438A3 /* Clover_Honey.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F44A4DCA2F878C87003438A3 /* Clover_Honey.mp3 */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		F4BC81532F8493CF009340D3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +31,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F44A4DCA2F878C87003438A3 /* Clover_Honey.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Clover_Honey.mp3; sourceTree = "<group>"; };
+		F44A4DCB2F878C87003438A3 /* delete_down.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = delete_down.mp3; sourceTree = "<group>"; };
+		F44A4DCC2F878C87003438A3 /* Down.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Down.mp3; sourceTree = "<group>"; };
+		F44A4DCD2F878C87003438A3 /* input_hit.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = input_hit.mp3; sourceTree = "<group>"; };
 		F4BC813C2F8493CD009340D3 /* prototype.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = prototype.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4BC81522F8493CF009340D3 /* prototypeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = prototypeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4BC815C2F8493CF009340D3 /* prototypeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = prototypeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -85,6 +96,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F44A4DCE2F878C87003438A3 /* Mp3file */ = {
+			isa = PBXGroup;
+			children = (
+				F44A4DCA2F878C87003438A3 /* Clover_Honey.mp3 */,
+				F44A4DCB2F878C87003438A3 /* delete_down.mp3 */,
+				F44A4DCC2F878C87003438A3 /* Down.mp3 */,
+				F44A4DCD2F878C87003438A3 /* input_hit.mp3 */,
+			);
+			path = Mp3file;
+			sourceTree = "<group>";
+		};
 		F4BC81332F8493CD009340D3 = {
 			isa = PBXGroup;
 			children = (
@@ -92,6 +114,7 @@
 				F4BC81552F8493CF009340D3 /* prototypeTests */,
 				F4BC815F2F8493CF009340D3 /* prototypeUITests */,
 				F4BC813D2F8493CD009340D3 /* Products */,
+				F44A4DCE2F878C87003438A3 /* Mp3file */,
 			);
 			sourceTree = "<group>";
 		};
@@ -226,6 +249,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F44A4DCF2F878C87003438A3 /* delete_down.mp3 in Resources */,
+				F44A4DD02F878C87003438A3 /* Down.mp3 in Resources */,
+				F44A4DD12F878C87003438A3 /* input_hit.mp3 in Resources */,
+				F44A4DD22F878C87003438A3 /* Clover_Honey.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

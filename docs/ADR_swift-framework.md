@@ -35,6 +35,19 @@
 * UIレイヤーから完全に切り離し、読み上げ処理に専念させるため
 * モジュール化や SWiftUI への移行の際に、そのまま再利用できるようにするため
 
+#### 構造
+* Audio/AudioSessionConfigurator
+  * AudioSession を操作する（カテゴリ設定、アクティブ化、など）
+* Speech/SpeechSynthesizerController
+  * アプリのオーディオセッションで鳴らす設定をする
+  * 音声合成を再生する
+  * 音声合成を停止する
+* ViewController
+  * 画面ロード時にUIを初期化する
+  * 改行文字入力(エンタキー)を検出したら、`readAloudAndClearIfNeeded(from: textView)` を呼ぶ
+  * 入力未確定なし+0.5秒経過で、`readAloudAndClearIfNeeded(from: textView)` を呼ぶ
+  * speechController.speak を呼ぶ
+
 ### エンジン: 読み上げの処理
 
 #### 採用する技術
