@@ -10,10 +10,9 @@ final class InputScreenComposer {
         let viewModel = InputScreenViewModel()
         let speechController = SpeechSynthesizerController()
         let audioEffectPlayer = AudioEffectPlayer()
-
         let features: [InputScreenFeaturePlugin] = [
-            ReadAloudOnReturnFeature(speech: speechController),
             AutoReadDebounceFeature(speech: speechController),
+            CharByCharReadFeature(speech: speechController),
             InputFeedbackSoundFeature(audioEffectPlayer: audioEffectPlayer)
         ]
 

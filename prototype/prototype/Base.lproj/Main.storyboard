@@ -31,22 +31,54 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VHV-p7-yQz">
+                                <rect key="frame" x="218" y="151" width="145" height="89"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="89" id="EEx-fI-AtI"/>
+                                    <constraint firstAttribute="width" constant="145" id="tCU-QB-Gjy"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="1文字読み上げ"/>
+                                <connections>
+                                    <action selector="didTapReadsCharacterByCharacterModeButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Wun-bd-SFa"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="edh-by-Rfc">
+                                <rect key="frame" x="30" y="151" width="145" height="89"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="145" id="05y-uO-IrE"/>
+                                    <constraint firstAttribute="height" constant="89" id="Nds-S9-SUp"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="149" id="oh1-UI-uO9"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="漢字変換読み上げ"/>
+                                <connections>
+                                    <action selector="didTapReadsConfirmedTextModeButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nf9-9o-xli"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="Qdf-8J-Xgy" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="3EA-N2-Lwu"/>
+                            <constraint firstItem="edh-by-Rfc" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="33" id="5fd-lE-Dk5"/>
+                            <constraint firstItem="VHV-p7-yQz" firstAttribute="leading" secondItem="edh-by-Rfc" secondAttribute="trailing" constant="43" id="B0F-am-coW"/>
+                            <constraint firstItem="edh-by-Rfc" firstAttribute="leading" secondItem="Qdf-8J-Xgy" secondAttribute="leading" id="GrF-HO-BDc"/>
                             <constraint firstItem="Pb0-81-0LX" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="175" id="I0L-hi-cwr"/>
                             <constraint firstItem="Qdf-8J-Xgy" firstAttribute="top" secondItem="Pb0-81-0LX" secondAttribute="bottom" constant="30.670000000000002" id="MnX-UN-xff"/>
                             <constraint firstItem="Qdf-8J-Xgy" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="W42-pK-AOG"/>
                             <constraint firstItem="Pb0-81-0LX" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="dbf-Va-pCq"/>
                             <constraint firstItem="Qdf-8J-Xgy" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="30" id="gCq-DD-6LH"/>
                             <constraint firstItem="Pb0-81-0LX" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="lWK-ie-kmL"/>
+                            <constraint firstItem="edh-by-Rfc" firstAttribute="baseline" secondItem="VHV-p7-yQz" secondAttribute="baseline" id="lcf-Hx-2WY"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Qdf-8J-Xgy" secondAttribute="trailing" constant="30" id="nyi-bA-0g7"/>
+                            <constraint firstItem="VHV-p7-yQz" firstAttribute="trailing" secondItem="Qdf-8J-Xgy" secondAttribute="trailing" id="ofq-CR-Oha"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="inputTextView" destination="Qdf-8J-Xgy" id="a7d-6j-okW"/>
+                        <outlet property="readsCharacterByCharacterModeButton" destination="VHV-p7-yQz" id="UMB-ze-MUN"/>
+                        <outlet property="readsConfirmedTextModeButton" destination="edh-by-Rfc" id="t0P-du-OIq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

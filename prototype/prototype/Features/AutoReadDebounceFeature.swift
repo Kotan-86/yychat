@@ -18,16 +18,26 @@ final class AutoReadDebounceFeature: InputScreenFeaturePlugin {
         self.viewModel = viewModel
         logger.info("bind completed. debounceInterval=\(self.debounceInterval, format: .fixed(precision: 1))s")
 
-        viewModel.events
-            .compactMap { event -> String? in
+        let confirmedTextStream = viewModel.events
+            .compactMap { [weak self] event -> String? in
                 guard case let .userChangedConfirmedText(text) = event else { return nil }
                 let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
                 if trimmed.isEmpty {
-                    self.logger.debug("skip debounce target: trimmed text is empty")
+                    self?.logger.debug("skip debounce target: trimmed text is empty")
                     return nil
                 }
-                self.logger.debug("debounce target accepted: textLength=\(trimmed.count)")
+                self?.logger.debug("debounce target accepted: textLength=\(trimmed.count)")
                 return trimmed
+            }
+
+        confirmedTextStream
+            .combineLatest(viewModel.speechReadMode)
+            .compactMap { [weak self] text, mode -> String? in
+                guard mode == .readsConfirmedText else {
+                    self?.logger.debug("skip debounce target: mode is not readsConfirmedText")
+                    return nil
+                }
+                return text
             }
             .debounce(for: .seconds(debounceInterval), scheduler: DispatchQueue.main)
             .sink { [weak self] text in
