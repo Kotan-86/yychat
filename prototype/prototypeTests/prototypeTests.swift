@@ -1,10 +1,3 @@
-//
-//  prototypeTests.swift
-//  prototypeTests
-//
-//  Created by 齋藤光貴 on 2026/04/07.
-//
-
 import XCTest
 @testable import prototype
 
