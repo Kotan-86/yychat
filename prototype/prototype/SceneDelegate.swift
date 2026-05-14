@@ -11,11 +11,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
-        guard let viewController = window?.rootViewController as? ViewController else { return }
+        guard let window, let viewController = window.rootViewController as? ViewController else { return }
 
+        let bootstrap = AudioSessionBootstrapController(window: window)
+        bootstrap.attachOverlayToWindow()
+
+        // `ViewController.viewDidLoad` が `viewModel` 非 nil を前提とするため、ブートストラップの `Task` に入る前に同期的に注入する。
         let composer = InputScreenComposer()
         composer.compose(into: viewController)
         inputScreenComposer = composer
+
+        bootstrap.runThenInvokeOnMain { _ in }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

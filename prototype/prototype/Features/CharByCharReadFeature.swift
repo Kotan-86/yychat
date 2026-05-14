@@ -1,4 +1,5 @@
 import Combine
+import CoreFoundation
 import OSLog
 
 final class CharByCharReadFeature: InputScreenFeaturePlugin {
@@ -47,7 +48,8 @@ final class CharByCharReadFeature: InputScreenFeaturePlugin {
         case let .userDeletedComposingCharacter(text):
             consecutiveDeleteCount += 1
             if consecutiveDeleteCount == 2 {
-                speak(text: "えー")
+                let inputTime = CFAbsoluteTimeGetCurrent()
+                speak(text: "えー", metricsInputTime: inputTime, metricsKind: .consecutiveDeleteFillSound)
             }
             previousComposingText = text
 
@@ -65,7 +67,8 @@ final class CharByCharReadFeature: InputScreenFeaturePlugin {
         guard let character = extractSingleAddedCharacter(previous: previousComposingText, current: currentText) else {
             return
         }
-        speak(text: String(character))
+        let inputTime = CFAbsoluteTimeGetCurrent()
+        speak(text: String(character), metricsInputTime: inputTime, metricsKind: .composingCharacterAdded)
     }
 
     private func extractSingleAddedCharacter(previous: String, current: String) -> Character? {
@@ -84,9 +87,9 @@ final class CharByCharReadFeature: InputScreenFeaturePlugin {
         return currentChars[prefixLength]
     }
 
-    private func speak(text: String) {
+    private func speak(text: String, metricsInputTime: CFAbsoluteTime, metricsKind: SpeechMetricsKind) {
         do {
-            try speech.speak(text: text)
+            try speech.speak(text: text, metricsInputTime: metricsInputTime, metricsKind: metricsKind)
             logger.debug("char-by-char speak succeeded: textLength=\(text.count)")
         } catch {
             logger.error("char-by-char speak failed: \(error.localizedDescription, privacy: .public)")

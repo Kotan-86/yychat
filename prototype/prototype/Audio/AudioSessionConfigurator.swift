@@ -12,4 +12,10 @@ final class AudioSessionConfigurator {
     static func activateSession() throws {
         try audioSession.setActive(true)
     }
+
+    /// `setCategory` と `setActive(true)` を連続して1試行として実行する。
+    static func activationAttempt() throws {
+        try configureAudioSession()
+        try activateSession()
+    }
 }
