@@ -46,6 +46,7 @@ final class AutoReadDebounceFeature: InputScreenFeaturePlugin {
                 do {
                     try speech.speak(text: text)
                     self.logger.info("auto read speak succeeded")
+                    self.viewModel?.addSentMessageFromReadAloud(text)
                     self.viewModel?.clearText()
                 } catch {
                     self.logger.error("auto read speak failed: \(error.localizedDescription, privacy: .public)")

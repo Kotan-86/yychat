@@ -1,3 +1,4 @@
+import Combine
 import OSLog
 
 final class InputScreenComposer {
@@ -10,9 +11,14 @@ final class InputScreenComposer {
         let viewModel = InputScreenViewModel()
         let speechController = SpeechSynthesizerController()
         let audioEffectPlayer = AudioEffectPlayer()
+        speechController.onSpeakingStateChanged = { isSpeaking in
+            viewModel.isSpeaking.send(isSpeaking)
+        }
+        // 仕様: docs/spec/timeline-screen.md#送信
+        // ReadAloudOnReturnFeature は仕様外（Return 時再読み上げなし）のため除外
         let features: [InputScreenFeaturePlugin] = [
             AutoReadDebounceFeature(speech: speechController),
-            CharByCharReadFeature(speech: speechController),
+            DraftAccumulatorFeature(),
             InputFeedbackSoundFeature(audioEffectPlayer: audioEffectPlayer)
         ]
 

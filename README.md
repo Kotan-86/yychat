@@ -39,7 +39,7 @@
 
 | 種類 | パス | 内容 |
 |------|------|------|
-| 機能仕様 | [docs/spec/input-screen.md](docs/spec/input-screen.md) | 入力画面の What・受入基準 |
+| 機能仕様 | [docs/spec/timeline-screen.md](docs/spec/timeline-screen.md) | タイムライン画面の What・受入基準 |
 | ADR | [docs/spec/ADR_*.md](docs/spec/) | 技術・UX 方針の決定記録（現状はいずれも **提案中**） |
 
 主な ADR:
@@ -54,11 +54,56 @@
 2. 実装後、コードに仕様へのリンクを付与する（例: `// 仕様: docs/spec/input-screen.md#確定読み上げ`）
 3. 技術選定の変更は ADR を追加・更新する（実装の詳細 **How** は ADR にも仕様にも書きすぎない）
 
+## 開発環境セットアップ
+
+音声認識基盤（YYAPIs gRPC）をビルドするために、次の 2 種類の「ライブラリ」を区別してください。
+
+| 種類 | 内容 | いつ必要か |
+|------|------|------------|
+| **A. アプリ依存（SPM）** | grpc-swift 3 パッケージ（`GRPCCore` 等） | **ビルドのたびに必須** |
+| **B. 開発ツール（Homebrew）** | `swift-protobuf`, `grpc-swift`（`protoc` プラグイン付き） | **proto から `.swift` を再生成するときのみ** |
+| **C. ランタイム設定** | Scheme 環境変数 `API_KEY` | **音声認識 API を実際に叩くとき**（Phase 3 以降） |
+
+### A. 必須: Xcode + Swift Package Manager
+
+1. **Xcode 16 以降**（grpc-swift 2.x / iOS 18 SDK 向け生成コードと相性）
+2. [prototype/prototype.xcodeproj](prototype/prototype.xcodeproj) を開く
+3. **File → Add Package Dependencies…** で次の 3 リポジトリを追加（いずれも **Up to Next Major**）
+
+| リポジトリ URL | 最小バージョン | リンクする Product（`prototype` ターゲット） |
+|--------------|----------------|---------------------------------------------|
+| `https://github.com/grpc/grpc-swift.git` | 2.1.0 | **GRPCCore** |
+| `https://github.com/grpc/grpc-swift-nio-transport.git` | 1.0.1 | **GRPCNIOTransportHTTP2** |
+| `https://github.com/grpc/grpc-swift-protobuf.git` | 1.1.0 | **GRPCProtobuf** |
+
+4. 初回は **File → Packages → Resolve Package Versions**（またはビルド時に自動解決）
+5. **Product → Clean Build Folder** → Build
+
+`swift-protobuf` 等の transitive 依存は SPM が解決するため、アプリターゲットへ直リンクは不要です。
+
+### B. 任意: Homebrew（proto 再生成のみ）
+
+`yysystem.proto` を編集して Swift を出し直すときだけ:
+
+```bash
+brew install swift-protobuf grpc-swift
+prototype/scripts/proto-gen.sh
+```
+
+Phase 1 では生成済みの `prototype/prototype/Speech/Protos/` を同梱しているため、**通常のビルドでは brew は不要**です。
+
+### C. 音声認識 API 利用時: API キー
+
+- [YYAPIs 開発者コンソール](https://api-web.yysystem2021.com) で API キーと `yysystem.proto` を取得
+- **Edit Scheme → Run → Environment Variables:** `API_KEY` = キー文字列
+- Phase 1–2 のコード移植だけでは起動テストに不要。`RecognizerClient` を動かす Phase 3 以降で設定
+
 ## プロトタイプの起動
 
 1. [prototype/prototype.xcodeproj](prototype/prototype.xcodeproj) を Xcode で開く
-2. ターゲット `prototype` を選び、実機またはシミュレータで Run
-3. **要件:** iOS 15.5 以降（`IPHONEOS_DEPLOYMENT_TARGET`）
+2. 上記 **開発環境セットアップ** の SPM 依存を追加済みであること
+3. ターゲット `prototype` を選び、実機またはシミュレータで Run
+4. **要件:** iOS **18.0** 以降（`IPHONEOS_DEPLOYMENT_TARGET`。YYAPIs 生成コードの `@available(iOS 18.0, …)` および grpc-swift 2.x 採用に合わせた）
 
 音声読み上げ・効果音のため、初回起動時にマイク／オーディオまわりの権限・セッション設定が走る場合があります。
 

@@ -13,6 +13,8 @@ enum SpeechMetricsKind: String, Sendable {
 final class SpeechSynthesizerController {
     private let synthesizer = AVSpeechSynthesizer()
     private let logger = Logger(subsystem: "yysystem.prototype", category: "SpeechSynthesizerController")
+    private let speakingStateDelegate = SpeechSpeakingStateDelegate()
+    var onSpeakingStateChanged: ((Bool) -> Void)?
 
 #if DEBUG
     private let speechMetricsTracker = SpeechMetricsTracker()
@@ -21,9 +23,16 @@ final class SpeechSynthesizerController {
 
     init() {
         synthesizer.usesApplicationAudioSession = true
+        speakingStateDelegate.onSpeakingStateChanged = { [weak self] isSpeaking in
+            self?.logger.debug("speaking state changed: \(isSpeaking)")
+            self?.onSpeakingStateChanged?(isSpeaking)
+        }
 #if DEBUG
         speechMetricsDelegate.tracker = speechMetricsTracker
+        speechMetricsDelegate.forwardingDelegate = speakingStateDelegate
         synthesizer.delegate = speechMetricsDelegate
+#else
+        synthesizer.delegate = speakingStateDelegate
 #endif
     }
 
@@ -62,21 +71,41 @@ final class SpeechSynthesizerController {
 
 #if DEBUG
 
+private final class SpeechSpeakingStateDelegate: NSObject, AVSpeechSynthesizerDelegate {
+    var onSpeakingStateChanged: ((Bool) -> Void)?
+
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didStart utterance: AVSpeechUtterance) {
+        onSpeakingStateChanged?(true)
+    }
+
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        onSpeakingStateChanged?(false)
+    }
+
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
+        onSpeakingStateChanged?(false)
+    }
+}
+
 private final class SpeechMetricsDelegate: NSObject, AVSpeechSynthesizerDelegate {
     weak var tracker: SpeechMetricsTracker?
+    weak var forwardingDelegate: AVSpeechSynthesizerDelegate?
 
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didStart utterance: AVSpeechUtterance) {
         assert(Thread.isMainThread)
+        forwardingDelegate?.speechSynthesizer?(synthesizer, didStart: utterance)
         tracker?.handleDidStart(utteranceText: utterance.speechString)
     }
 
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
         assert(Thread.isMainThread)
+        forwardingDelegate?.speechSynthesizer?(synthesizer, didFinish: utterance)
         tracker?.handleDidFinish()
     }
 
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
         assert(Thread.isMainThread)
+        forwardingDelegate?.speechSynthesizer?(synthesizer, didCancel: utterance)
         tracker?.handleDidCancel()
     }
 }
@@ -156,4 +185,24 @@ private func millisString(_ ms: Double) -> String {
     }
     return String(format: "%.2f", rounded)
 }
+#endif
+
+#if !DEBUG
+
+private final class SpeechSpeakingStateDelegate: NSObject, AVSpeechSynthesizerDelegate {
+    var onSpeakingStateChanged: ((Bool) -> Void)?
+
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didStart utterance: AVSpeechUtterance) {
+        onSpeakingStateChanged?(true)
+    }
+
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        onSpeakingStateChanged?(false)
+    }
+
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
+        onSpeakingStateChanged?(false)
+    }
+}
+
 #endif
