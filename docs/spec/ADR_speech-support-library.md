@@ -234,7 +234,7 @@
 #### 採用する整理
 
 - **本 ADR** — ライブラリ化の境界・ホスト向け契約・トレードオフ
-- **発言支援 SDK 向けの機能仕様（未作成）** — 方式Aの受入条件を、画面仕様から切り出して測定可能に書く。公開面（渡すデータ／受け取る結果）を受入基準に含める
+- **[speech-support-sdk.md](speech-support-sdk.md)** — 方式Aの受入条件を、画面仕様から切り出して測定可能に書く。公開面（渡すデータ／受け取る結果）を受入基準に含める
 - **[timeline-screen.md](timeline-screen.md)** — 統合画面プロダクトの仕様として残し、ライブラリ仕様と混同しない
 
 ## Consequences
@@ -285,6 +285,7 @@
 
 ## 関連ドキュメント
 
+- [発言支援 SDK 仕様](speech-support-sdk.md)
 - [ADR: Swift での開発フレームワーク](ADR_swift-framework.md)
 - [ADR: プロトタイプのアーキテクチャリファクタリング](ADR_architecture-refactoring.md)
 - [ADR: 入力読み上げ方式](ADR_feature-reads-method.md)
