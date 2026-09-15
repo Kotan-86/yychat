@@ -1,5 +1,7 @@
 import AVFoundation
 
+// 仕様: docs/spec/speech-support-sdk.md#4-方式aの振る舞いsdk-が保証する
+// 未差し替え時も同梱の既定アセットで変換中フィードバックを鳴らす。
 final class AudioEffectPlayer {
     private var hitPlayers: [AVAudioPlayer] = []
     private var deletePlayer: AVAudioPlayer?

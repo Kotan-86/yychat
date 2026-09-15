@@ -3,6 +3,7 @@ import Foundation
 import OSLog
 
 // 仕様: docs/spec/timeline-screen.md
+// 仕様: docs/spec/speech-support-sdk.md#3-ホストが受け取る結果
 final class InputScreenViewModel {
     let events = PassthroughSubject<TextAreaInputEvent, Never>()
     let displayState = CurrentValueSubject<TextAreaDisplayState, Never>(TextAreaDisplayState(text: ""))
@@ -12,15 +13,23 @@ final class InputScreenViewModel {
     // 理由: 初期値を保持しないので、購読タイミング次第で現在モードを取りこぼす。
     // 不採用: Bool（例: isCharacterByCharacter）
     // 理由: モード増加時に分岐が壊れやすく、OCPの拡張性が下がる。
+    // 注: 製品配線は方式Aのみ。方式B切替 UI／Feature は製品経路に含めない。
     let speechReadMode = CurrentValueSubject<InputSpeechReadMode, Never>(.readsConfirmedText)
 
     // 仕様: docs/spec/timeline-screen.md#タイムライン表示
     let timelineMessages = CurrentValueSubject<[TimelineMessage], Never>([])
     // 仕様: docs/spec/timeline-screen.md#下書き領域
     let draftText = CurrentValueSubject<String, Never>("")
-    // 仕様: docs/spec/timeline-screen.md#発言支援（方式A）
+    // 仕様: docs/spec/speech-support-sdk.md#3-ホストが受け取る結果
     // 音声合成の再生中状態。再生中は音声認識へのマイク送信を一時停止するために利用。
     let isSpeaking = CurrentValueSubject<Bool, Never>(false)
+
+    /// デバウンス確定読みが開始できたときの読み上げ対象文字列（spoken）。ホストが下書き等へ反映する。
+    // 仕様: docs/spec/speech-support-sdk.md#3-ホストが受け取る結果
+    let spokenText = PassthroughSubject<String, Never>()
+    /// 入力欄を空にしてほしい旨。ホストが自画面の入力をクリアする。
+    // 仕様: docs/spec/speech-support-sdk.md#3-ホストが受け取る結果
+    let clearTextRequest = PassthroughSubject<Void, Never>()
 
     private var previousText: String = ""
     private var previousIsComposing: Bool = false
@@ -50,6 +59,8 @@ final class InputScreenViewModel {
         previousIsComposing = isComposing
     }
 
+    /// Return／送信相当の入力事実。方式Aの既定発言支援では再読み上げに使わない。
+    // 仕様: docs/spec/speech-support-sdk.md#2-ホストが渡す入力事実
     func onTextAreaReturnKeyDidPress(text: String) {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard trimmed.isEmpty == false else {
@@ -83,7 +94,7 @@ final class InputScreenViewModel {
     }
 
     // 仕様: docs/spec/timeline-screen.md#下書き領域
-    // DraftAccumulatorFeature から呼ばれる
+    // ホストが spoken 通知を受けて呼ぶ
     func appendDraft(_ text: String) {
         let current = draftText.value
         let next = current.isEmpty ? text : current + " " + text
@@ -91,15 +102,20 @@ final class InputScreenViewModel {
         logger.debug("appendDraft: draftLength=\(next.count)")
     }
 
-    // 仕様: docs/spec/timeline-screen.md#タイムライン表示
-    // デバウンス読み上げ済みテキストを送信メッセージとしてタイムラインに追加する
-    func addSentMessageFromReadAloud(_ text: String) {
+    /// 発言支援側が読み上げ開始成功時に呼ぶ。ホストは `spokenText` を購読して反映する。
+    // 仕様: docs/spec/speech-support-sdk.md#3-ホストが受け取る結果
+    func notifySpoken(_ text: String) {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
-        var messages = timelineMessages.value
-        messages.append(TimelineMessage(id: UUID(), direction: .sent, text: trimmed, status: .final_))
-        timelineMessages.send(messages)
-        logger.info("addSentMessageFromReadAloud: messageLength=\(trimmed.count)")
+        logger.info("notifySpoken: textLength=\(trimmed.count)")
+        spokenText.send(trimmed)
+    }
+
+    /// 発言支援側がクリア要求を出すときに呼ぶ。ホストは `clearTextRequest` を購読して入力を空にする。
+    // 仕様: docs/spec/speech-support-sdk.md#3-ホストが受け取る結果
+    func requestClearText() {
+        logger.debug("requestClearText")
+        clearTextRequest.send(())
     }
 
     // 仕様: docs/spec/timeline-screen.md#受信メッセージ（Phase 5 接続用 stub）
@@ -132,6 +148,7 @@ final class InputScreenViewModel {
     // 採用: View はこのメソッド呼び出しだけを行い、モード変更の表現を ViewModel に集約する。
     // 不採用: View から speechReadMode.send(...) を直接呼ぶ
     // 理由: View が Combine 実装詳細を知ることになり、MVVMの責務分離が崩れる。
+    // 注: 製品配線は方式A固定。方式Bへの切替は製品経路に含めない。
     func selectSpeechReadMode(_ mode: InputSpeechReadMode) {
         logger.info("speechReadMode will change: from=\(String(describing: self.speechReadMode.value), privacy: .public) to=\(String(describing: mode), privacy: .public)")
         speechReadMode.send(mode)

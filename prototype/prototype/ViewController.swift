@@ -49,9 +49,9 @@ class ViewController: UIViewController, UITextViewDelegate, UITableViewDataSourc
         inputTextView.delegate = self
         inputTextView.returnKeyType = .send
         inputTextView.enablesReturnKeyAutomatically = true
-        logger.info("viewDidLoad: mode before initial send=\(String(describing: self.viewModel.speechReadMode.value), privacy: .public)")
+        // 仕様: docs/spec/speech-support-sdk.md#7-含めないもの
+        // 製品経路は方式A固定（方式B切替 UI は置かない）
         self.viewModel.selectSpeechReadMode(.readsConfirmedText)
-        logger.info("viewDidLoad: mode after initial send=\(String(describing: self.viewModel.speechReadMode.value), privacy: .public)")
         bindViewModel()
     }
 

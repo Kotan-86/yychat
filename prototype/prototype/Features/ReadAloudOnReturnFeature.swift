@@ -1,3 +1,5 @@
+// 仕様: docs/spec/speech-support-sdk.md#7-含めないもの
+// Return／送信時の再読み上げは方式Aの製品経路に含めない。参照用に残し、InputScreenComposer からは接続しない。
 import Combine
 import OSLog
 

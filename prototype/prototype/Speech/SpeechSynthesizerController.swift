@@ -2,7 +2,7 @@ import AVFoundation
 import CoreFoundation
 import OSLog
 
-/// `CharByCharReadFeature` などから、計測ログの文脈を区別するために渡す。
+/// 計測ログの文脈を区別するために渡す（方式B参照実装からも利用）。
 enum SpeechMetricsKind: String, Sendable {
     case composingCharacterAdded = "文字追加（変換中）"
     case consecutiveDeleteFillSound = "連続削除「えー」"
@@ -10,6 +10,8 @@ enum SpeechMetricsKind: String, Sendable {
 
 // MARK: - Speech synthesizer
 
+// 仕様: docs/spec/speech-support-sdk.md#5-セッションと配線
+// Audio Session のカテゴリ設定・アクティブ化は行わない（ホスト専有）。
 final class SpeechSynthesizerController {
     private let synthesizer = AVSpeechSynthesizer()
     private let logger = Logger(subsystem: "yysystem.prototype", category: "SpeechSynthesizerController")
@@ -22,6 +24,7 @@ final class SpeechSynthesizerController {
 #endif
 
     init() {
+        // アプリ共有セッションを使うが、カテゴリ／setActive はホスト側で行う。
         synthesizer.usesApplicationAudioSession = true
         speakingStateDelegate.onSpeakingStateChanged = { [weak self] isSpeaking in
             self?.logger.debug("speaking state changed: \(isSpeaking)")

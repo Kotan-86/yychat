@@ -1,3 +1,5 @@
+// 仕様: docs/spec/speech-support-sdk.md#7-含めないもの
+// 方式Bは製品 SDK／製品配線の対象外。参照用に残し、InputScreenComposer からは接続しない。
 import Combine
 import CoreFoundation
 import OSLog
