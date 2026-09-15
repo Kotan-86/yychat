@@ -21,19 +21,20 @@ final class AutoReadDebounceFeature: SpeechSupportFeaturePlugin {
         logger.info("bind completed. debounceInterval=\(self.debounceInterval, format: .fixed(precision: 1))s")
 
         // 仕様: docs/spec/speech-support-sdk.md#受入基準
+        // 仕様: docs/spec/bugs/TBD_debounce-clear-still-speaks.md
+        // 空／空白もデバウンス入力に含め、待機中候補を取り消す。
         engine.events
-            .compactMap { [weak self] event -> String? in
+            .compactMap { event -> String? in
                 guard case let .userChangedConfirmedText(text) = event else { return nil }
-                let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-                if trimmed.isEmpty {
-                    self?.logger.debug("skip debounce target: trimmed text is empty")
-                    return nil
-                }
-                return trimmed
+                return text.trimmingCharacters(in: .whitespacesAndNewlines)
             }
             .debounce(for: .seconds(debounceInterval), scheduler: DispatchQueue.main)
             .sink { [weak self] text in
                 guard let self else { return }
+                guard text.isEmpty == false else {
+                    self.logger.debug("skip auto read: trimmed text is empty after debounce")
+                    return
+                }
                 do {
                     try speech.speak(text: text)
                     self.logger.info("auto read speak succeeded")
