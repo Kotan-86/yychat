@@ -286,6 +286,7 @@
 ## 関連ドキュメント
 
 - [発言支援 SDK 仕様](speech-support-sdk.md)
+- [YY文字起こし — 発言支援 SDK スパイク確認項目](yy-transcription-spike-checklist.md)（本番組み込みは別判断）
 - [ADR: Swift での開発フレームワーク](ADR_swift-framework.md)
 - [ADR: プロトタイプのアーキテクチャリファクタリング](ADR_architecture-refactoring.md)
 - [ADR: 入力読み上げ方式](ADR_feature-reads-method.md)

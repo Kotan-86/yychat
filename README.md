@@ -38,11 +38,12 @@
 
 ## ドキュメント
 
-| 種類     | パス                                                               | 内容                                                                                                               |
-| -------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| 機能仕様 | [docs/spec/timeline-screen.md](docs/spec/timeline-screen.md)       | タイムライン画面の What・受入基準（ライブラリ境界ではない）                                                        |
-| 機能仕様 | [docs/spec/speech-support-sdk.md](docs/spec/speech-support-sdk.md) | 発言支援 SDK（方式A・UI なし）のホスト向け配布契約・受入基準                                                       |
-| ADR      | [docs/spec/ADR\_\*.md](docs/spec/)                                 | 技術・UX 方針の決定記録（[発言支援ライブラリ化](docs/spec/ADR_speech-support-library.md) は **承認**、他は提案中） |
+| 種類       | パス                                                                                           | 内容                                                                                                               |
+| ---------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| 機能仕様   | [docs/spec/timeline-screen.md](docs/spec/timeline-screen.md)                                   | タイムライン画面の What・受入基準（ライブラリ境界ではない）                                                        |
+| 機能仕様   | [docs/spec/speech-support-sdk.md](docs/spec/speech-support-sdk.md)                             | 発言支援 SDK（方式A・UI なし）のホスト向け配布契約・受入基準                                                       |
+| 確認リスト | [docs/spec/yy-transcription-spike-checklist.md](docs/spec/yy-transcription-spike-checklist.md) | YY文字起こし向けスパイク確認項目（本番組み込みは別判断）                                                           |
+| ADR        | [docs/spec/ADR\_\*.md](docs/spec/)                                                             | 技術・UX 方針の決定記録（[発言支援ライブラリ化](docs/spec/ADR_speech-support-library.md) は **承認**、他は提案中） |
 
 主な ADR:
 
@@ -112,6 +113,6 @@ Phase 1 では生成済みの `prototype/prototype/Speech/Protos/` を同梱し�
 
 ## 現状とスコープ外
 
-- 本リポジトリは **プロトタイプ段階** です。YY文字起こし・YYProbe への組み込みは別フェーズ（[ADR_swift-framework.md](docs/spec/ADR_swift-framework.md) 参照）
+- 本リポジトリは **プロトタイプ段階** です。YY文字起こしへの本番組み込み可否はスパイク確認後の別判断（[スパイク確認項目](docs/spec/yy-transcription-spike-checklist.md)）。YYProbe は初回スコープ外（[ADR_swift-framework.md](docs/spec/ADR_swift-framework.md) 参照）
 - **Android**、**クラウド TTS**（Google Cloud TTS 等）はスコープ外（将来の検討事項は ADR に記載）
 - **Return キー読み上げ**は仕様に含めません（`ReadAloudOnReturnFeature` は仕様外のため、本番化前に整理予定）
