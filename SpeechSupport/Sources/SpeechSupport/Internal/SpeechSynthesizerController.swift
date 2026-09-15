@@ -2,19 +2,17 @@ import AVFoundation
 import CoreFoundation
 import OSLog
 
-/// 計測ログの文脈を区別するために渡す（方式B参照実装からも利用）。
+/// 計測ログの文脈を区別するために渡す（内部参照用）。
 enum SpeechMetricsKind: String, Sendable {
     case composingCharacterAdded = "文字追加（変換中）"
     case consecutiveDeleteFillSound = "連続削除「えー」"
 }
 
-// MARK: - Speech synthesizer
-
 // 仕様: docs/spec/speech-support-sdk.md#5-セッションと配線
 // Audio Session のカテゴリ設定・アクティブ化は行わない（ホスト専有）。
-final class SpeechSynthesizerController {
+final class SpeechSynthesizerController: TextToSpeechEngine {
     private let synthesizer = AVSpeechSynthesizer()
-    private let logger = Logger(subsystem: "yysystem.prototype", category: "SpeechSynthesizerController")
+    private let logger = Logger(subsystem: "SpeechSupport", category: "SpeechSynthesizerController")
     private let speakingStateDelegate = SpeechSpeakingStateDelegate()
     var onSpeakingStateChanged: ((Bool) -> Void)?
 
@@ -24,8 +22,10 @@ final class SpeechSynthesizerController {
 #endif
 
     init() {
+#if !os(macOS)
         // アプリ共有セッションを使うが、カテゴリ／setActive はホスト側で行う。
         synthesizer.usesApplicationAudioSession = true
+#endif
         speakingStateDelegate.onSpeakingStateChanged = { [weak self] isSpeaking in
             self?.logger.debug("speaking state changed: \(isSpeaking)")
             self?.onSpeakingStateChanged?(isSpeaking)
@@ -39,13 +39,17 @@ final class SpeechSynthesizerController {
 #endif
     }
 
+    func speak(text: String) throws {
+        try speak(text: text, metricsInputTime: nil, metricsKind: nil)
+    }
+
     /// - Parameters:
     ///   - metricsInputTime: 非 `nil` かつ `metricsKind` が非 `nil` のときのみ、レイテンシ計測の FIFO に積む。
     ///   - metricsKind: `metricsInputTime` とセットで指定する。
     func speak(
         text: String,
-        metricsInputTime: CFAbsoluteTime? = nil,
-        metricsKind: SpeechMetricsKind? = nil
+        metricsInputTime: CFAbsoluteTime?,
+        metricsKind: SpeechMetricsKind?
     ) throws {
         logger.debug("speak requested: textLength=\(text.count)")
 
@@ -124,14 +128,13 @@ private final class SpeechMetricsTracker {
     private var lastUtteranceStartTime: CFAbsoluteTime?
     private var lastUtteranceFinishTime: CFAbsoluteTime?
 
-    private let logger = Logger(subsystem: "yysystem.prototype", category: "SpeechMetrics")
+    private let logger = Logger(subsystem: "SpeechSupport", category: "SpeechMetrics")
 
     func enqueue(inputTime: CFAbsoluteTime, identifier: String, kind: SpeechMetricsKind) {
         assert(Thread.isMainThread)
         pending.append(Pending(inputTime: inputTime, identifier: identifier, kind: kind))
     }
 
-    /// `stopSpeaking` 時など。再生前に棄却されたペンディングをログに出して空にする。
     func flushCancelledPending() {
         assert(Thread.isMainThread)
         for p in pending {
@@ -172,7 +175,6 @@ private final class SpeechMetricsTracker {
         lastUtteranceFinishTime = CFAbsoluteTimeGetCurrent()
     }
 
-    /// `didCancel` で `didStart` 前に打ち切られた場合、先頭のペンディングを 1 件落とす。
     func handleDidCancel() {
         guard let removed = pending.first else { return }
         pending.removeFirst()

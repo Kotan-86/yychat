@@ -18,7 +18,7 @@
 1. **確定テキストの自動読み上げ** — 漢字変換確定後、一定時間（0.5秒）入力が止まったら全文を読み上げ、入力欄をクリアする
 2. **入力中の効果音** — IME 未確定の文字を追加・削除したとき、それぞれ異なる効果音を鳴らし、入力の継続感を伝える
 
-読み上げ方式は UI 上で切り替え可能です。**推奨は「確定読み＋効果音」**（方式A）です。「1文字ずつ読み」（方式B）は比較・実験用です（[ADR: 入力読み上げ方式](docs/spec/ADR_feature-reads-method.md) 参照）。
+読み上げ方式の製品方針は **確定読み＋効果音（方式A）** です（[ADR: 入力読み上げ方式](docs/spec/ADR_feature-reads-method.md)）。方式Bは製品 SDK 対象外です。発言支援ロジックは [`SpeechSupport`](SpeechSupport/) パッケージとして配布し、プロトタイプがその第一ホストです（[発言支援 SDK 仕様](docs/spec/speech-support-sdk.md)）。
 
 ## 想定する価値
 
@@ -28,12 +28,13 @@
 
 ## リポジトリ構成
 
-| パス             | 内容                                          |
-| ---------------- | --------------------------------------------- |
-| `prototype/`     | iOS プロトタイプ（Xcode プロジェクト）        |
-| `docs/spec/`     | 機能仕様・ADR（Architecture Decision Record） |
-| `reflection/`    | 開発振り返り（仕様ではない）                  |
-| `.cursor/rules/` | 仕様駆動開発の AI 向けルール                  |
+| パス              | 内容                                          |
+| ----------------- | --------------------------------------------- |
+| `SpeechSupport/`  | 発言支援 SDK（Swift Package・方式A・UI なし） |
+| `prototype/`      | iOS プロトタイプ（Xcode・SDK の第一ホスト）   |
+| `docs/spec/`      | 機能仕様・ADR（Architecture Decision Record） |
+| `reflection/`     | 開発振り返り（仕様ではない）                  |
+| `.cursor/skills/` | 仕様駆動開発の AI 向けスキル                  |
 
 ## ドキュメント
 

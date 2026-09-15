@@ -7,11 +7,20 @@ final class AudioEffectPlayer {
     private var deletePlayer: AVAudioPlayer?
     private var hitPlayerIndex = 0
 
-    init() {
-        hitPlayers = (0..<2).compactMap { _ in
-            loadAudioPlayer(resourceName: "input_hit", fileExtension: "mp3")
+    init(overrides: SoundEffectOverrides = SoundEffectOverrides()) {
+        if let hitURL = overrides.hitURL {
+            hitPlayers = (0..<2).compactMap { _ in loadAudioPlayer(url: hitURL) }
+        } else {
+            hitPlayers = (0..<2).compactMap { _ in
+                loadBundledAudioPlayer(resourceName: "input_hit", fileExtension: "mp3")
+            }
         }
-        deletePlayer = loadAudioPlayer(resourceName: "delete_down", fileExtension: "mp3")
+
+        if let deleteURL = overrides.deleteURL {
+            deletePlayer = loadAudioPlayer(url: deleteURL)
+        } else {
+            deletePlayer = loadBundledAudioPlayer(resourceName: "delete_down", fileExtension: "mp3")
+        }
     }
 
     func playHit() {
@@ -28,21 +37,24 @@ final class AudioEffectPlayer {
         deletePlayer.play()
     }
 
-    private func loadAudioPlayer(resourceName: String, fileExtension: String) -> AVAudioPlayer? {
-        guard let url = Bundle.main.url(
+    private func loadBundledAudioPlayer(resourceName: String, fileExtension: String) -> AVAudioPlayer? {
+        guard let url = Bundle.module.url(
             forResource: resourceName,
             withExtension: fileExtension
         ) else {
             print("効果音ファイルが見つかりません: \(resourceName).\(fileExtension)")
             return nil
         }
+        return loadAudioPlayer(url: url)
+    }
 
+    private func loadAudioPlayer(url: URL) -> AVAudioPlayer? {
         do {
             let player = try AVAudioPlayer(contentsOf: url)
             player.prepareToPlay()
             return player
         } catch {
-            print("効果音プレイヤーを初期化できませんでした: \(resourceName).\(fileExtension), error: \(error)")
+            print("効果音プレイヤーを初期化できませんでした: \(url.lastPathComponent), error: \(error)")
             return nil
         }
     }

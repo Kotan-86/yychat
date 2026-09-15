@@ -1,9 +1,11 @@
 import Combine
 import OSLog
+import SpeechSupport
 import SwiftProtobuf
 import UIKit
 
 // 仕様: docs/spec/timeline-screen.md
+// 仕様: docs/spec/speech-support-sdk.md#5-セッションと配線
 class ViewController: UIViewController, UITextViewDelegate, UITableViewDataSource, UITableViewDelegate, AudioControllerDelegate, UIGestureRecognizerDelegate {
 
     @IBOutlet private weak var timelineTableView: UITableView!
@@ -13,6 +15,8 @@ class ViewController: UIViewController, UITextViewDelegate, UITableViewDataSourc
     @IBOutlet private weak var inputTextView: UITextView!
 
     var viewModel: InputScreenViewModel!
+    /// 発言支援は公開 API（`SpeechSupportSession`）のみ利用する。
+    var speechSupport: SpeechSupportSession!
     private var cancellables: Set<AnyCancellable> = []
     private let logger = Logger(subsystem: "yysystem.prototype", category: "ViewController")
     private let recognizerClient = RecognizerClient()
@@ -38,7 +42,8 @@ class ViewController: UIViewController, UITextViewDelegate, UITableViewDataSourc
         assert(speechRecognitionToggleButton != nil, "speechRecognitionToggleButton outlet is not connected")
         assert(inputTextView != nil, "inputTextView outlet is not connected")
         precondition(self.viewModel != nil, "InputScreenViewModel must be injected by InputScreenComposer")
-        logger.info("viewDidLoad: viewModel injected")
+        precondition(self.speechSupport != nil, "SpeechSupportSession must be injected by InputScreenComposer")
+        logger.info("viewDidLoad: viewModel and speechSupport injected")
 
         setupTimelineTableView()
         setupDraftLabel()
@@ -49,9 +54,6 @@ class ViewController: UIViewController, UITextViewDelegate, UITableViewDataSourc
         inputTextView.delegate = self
         inputTextView.returnKeyType = .send
         inputTextView.enablesReturnKeyAutomatically = true
-        // 仕様: docs/spec/speech-support-sdk.md#7-含めないもの
-        // 製品経路は方式A固定（方式B切替 UI は置かない）
-        self.viewModel.selectSpeechReadMode(.readsConfirmedText)
         bindViewModel()
     }
 
@@ -87,7 +89,9 @@ class ViewController: UIViewController, UITextViewDelegate, UITableViewDataSourc
         let currentText = textView.text ?? ""
         let isComposing = textView.markedTextRange != nil
         logger.debug("textViewDidChange: textLength=\(currentText.count), isComposing=\(isComposing)")
-        viewModel.onTextAreaTextDidChange(currentText: currentText, isComposing: isComposing)
+        // 仕様: docs/spec/speech-support-sdk.md#2-ホストが渡す入力事実
+        viewModel.inputText.send(currentText)
+        speechSupport.notifyTextDidChange(currentText: currentText, isComposing: isComposing)
     }
 
     // MARK: - UITableViewDataSource
@@ -169,13 +173,13 @@ class ViewController: UIViewController, UITextViewDelegate, UITableViewDataSourc
     }
 
     private func bindViewModel() {
-        viewModel.displayState
+        viewModel.inputText
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] state in
+            .sink { [weak self] text in
                 guard let self else { return }
-                if self.inputTextView.text != state.text {
-                    self.logger.debug("displayState applied: textLength=\(state.text.count)")
-                    self.inputTextView.text = state.text
+                if self.inputTextView.text != text {
+                    self.logger.debug("inputText applied: textLength=\(text.count)")
+                    self.inputTextView.text = text
                 }
             }
             .store(in: &cancellables)

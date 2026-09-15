@@ -19,6 +19,7 @@
 		F44A4DD02F878C87003438A3 /* Down.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F44A4DCC2F878C87003438A3 /* Down.mp3 */; };
 		F44A4DD12F878C87003438A3 /* input_hit.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F44A4DCD2F878C87003438A3 /* input_hit.mp3 */; };
 		F44A4DD22F878C87003438A3 /* Clover_Honey.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F44A4DCA2F878C87003438A3 /* Clover_Honey.mp3 */; };
+		F4SS00032FCEA70000SS0003 /* SpeechSupport in Frameworks */ = {isa = PBXBuildFile; productRef = F4SS00022FCEA70000SS0002 /* SpeechSupport */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +93,7 @@
 				F42D6AE52FCEA60700DCE1E1 /* GRPCCore in Frameworks */,
 				F42D6AE72FCEA60700DCE1E1 /* GRPCInProcessTransport in Frameworks */,
 				F42D6AEC2FCEA63D00DCE1E1 /* protoc-gen-grpc-swift in Frameworks */,
+				F4SS00032FCEA70000SS0003 /* SpeechSupport in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,6 +182,7 @@
 				F42D6AEE2FCEA66100DCE1E1 /* GRPCNIOTransportHTTP2 */,
 				F42D6AF02FCEA66100DCE1E1 /* GRPCNIOTransportHTTP2Posix */,
 				F42D6AF22FCEA66100DCE1E1 /* GRPCNIOTransportHTTP2TransportServices */,
+				F4SS00022FCEA70000SS0002 /* SpeechSupport */,
 			);
 			productName = prototype;
 			productReference = F4BC813C2F8493CD009340D3 /* prototype.app */;
@@ -268,6 +271,7 @@
 				F42D6AE12FCEA60700DCE1E1 /* XCRemoteSwiftPackageReference "grpc-swift" */,
 				F42D6AE82FCEA63D00DCE1E1 /* XCRemoteSwiftPackageReference "grpc-swift-protobuf" */,
 				F42D6AED2FCEA66100DCE1E1 /* XCRemoteSwiftPackageReference "grpc-swift-nio-transport" */,
+				F4SS00012FCEA70000SS0001 /* XCLocalSwiftPackageReference "../SpeechSupport" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F4BC813D2F8493CD009340D3 /* Products */;
@@ -657,6 +661,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		F4SS00012FCEA70000SS0001 /* XCLocalSwiftPackageReference "../SpeechSupport" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../SpeechSupport;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		F42D6AE12FCEA60700DCE1E1 /* XCRemoteSwiftPackageReference "grpc-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -724,6 +735,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F42D6AED2FCEA66100DCE1E1 /* XCRemoteSwiftPackageReference "grpc-swift-nio-transport" */;
 			productName = GRPCNIOTransportHTTP2TransportServices;
+		};
+		F4SS00022FCEA70000SS0002 /* SpeechSupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F4SS00012FCEA70000SS0001 /* XCLocalSwiftPackageReference "../SpeechSupport" */;
+			productName = SpeechSupport;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
