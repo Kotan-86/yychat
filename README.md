@@ -107,6 +107,8 @@ Phase 1 では生成済みの `prototype/prototype/Speech/Protos/` を同梱し�
 1. [prototype/prototype.xcodeproj](prototype/prototype.xcodeproj) を Xcode で開く
 2. 上記 **開発環境セットアップ** の SPM 依存を追加済みであること
 3. ターゲット `prototype` を選び、実機またはシミュレータで Run
+   ※ 実機での実施を推奨します。
+   ※「信頼されていないため使えません」とポップ表示された場合は、実機で「設定」→「一般」→「VPNとデバイス管理」→自身のメールアドレスを押して信頼するを選択する。
 4. **要件:** iOS **18.0** 以降（`IPHONEOS_DEPLOYMENT_TARGET`。YYAPIs 生成コードの `@available(iOS 18.0, …)` および grpc-swift 2.x 採用に合わせた）
 
 音声読み上げ・効果音のため、初回起動時にマイク／オーディオまわりの権限・セッション設定が走る場合があります。
